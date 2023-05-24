@@ -1,0 +1,8 @@
+{
+  "sobel_technique": {
+    "step": 5,
+    "border_crop": 10,
+    "corner_crop": 20,
+    "defect_size": 8
+  }
+}
