@@ -10,7 +10,7 @@ import tensorflow_datasets as tfds
 batch_size = 32
 img_height = 100
 img_width = 100
-data_dir = "./train"
+data_dir = "E:/train"
 data_dir = pathlib.Path(data_dir)
 print(len(list(data_dir.glob('*/*.png'))))
 
@@ -33,18 +33,16 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 class_names = train_ds.class_names
 print(class_names)
 
-num_classes = 5
+num_classes = 2
 
 model = tf.keras.Sequential([
-  tf.keras.layers.Rescaling(1./10),
-  tf.keras.layers.Conv2D(26, 3, activation='relu'),
+  tf.keras.layers.Rescaling(1./20),
+  tf.keras.layers.Conv2D(32, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
-  tf.keras.layers.Conv2D(26, 3, activation='relu'),
-  tf.keras.layers.MaxPooling2D(),
-  tf.keras.layers.Conv2D(26, 3, activation='relu'),
+  tf.keras.layers.Conv2D(32, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Flatten(),
-  tf.keras.layers.Dense(64, activation='relu'),
+  tf.keras.layers.Dense(40, activation='relu'),
   tf.keras.layers.Dense(num_classes)
 ])
 
@@ -53,10 +51,14 @@ model.compile(
   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
   metrics=['accuracy'])
 
-model.fit(
+history = model.fit(
   train_ds,
   validation_data=val_ds,
-  epochs=3
+  epochs=10
 )
+
+print(history.history['accuracy'])
+print(history.history['val_accuracy'])
+
 
 model.save("./model1.ckpt")

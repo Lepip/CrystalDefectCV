@@ -16,7 +16,7 @@ print(len(list(data_dir.glob('*/*.png'))))
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
   data_dir,
-  validation_split=0.2,
+  validation_split=0.1,
   subset="training",
   seed=123,
   image_size=(img_height, img_width),
@@ -24,18 +24,18 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
   data_dir,
-  validation_split=0.2,
+  validation_split=0.1,
   subset="validation",
   seed=123,
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
-model = tf.keras.models.load_model("./models/model1.ckpt")
+model = tf.keras.models.load_model("./models/model2.ckpt")
 
 model.fit(
   train_ds,
   validation_data=val_ds,
-  epochs=10
+  epochs=1
 )
 
-model.save("./models/model2.ckpt")
+model.save("./models/model3.ckpt")
