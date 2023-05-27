@@ -17,11 +17,17 @@ def open_png(file_path: str) -> np.ndarray:
 
 def save_png(image: np.ndarray, file_path: str) -> None:
     """
-    Writes a 2D ndarray of uint8 as a grey image.
+    Writes a ndarray of uint8 as an image file. If 'image' has only 2 dimensions, writes it as a gray image.
     :param file_path:
     :param image: gray image.
-    :type image: 2D np.ndarray, dtype='uint8'
+    :type image: 2D or 3D (*, *, 3) np.ndarray, dtype='uint8'
     :return: None
     """
-    image_gray = Image.fromarray(image, mode="L")
-    image_gray.save(file_path)
+    if len(image.shape) == 2:
+        image_gray = Image.fromarray(image.astype('uint8'), mode="L")
+        image_gray.save(file_path)
+    elif len(image.shape) == 3 and image.shape[2] == 3:
+        image_rgb = Image.fromarray(image.astype('uint8'), mode="RGB")
+        image_rgb.save(file_path)
+    else:
+        print("Error in cdcv.save_png: expected shape of image to be (*, *) or (*, *, 3), got " + str(image.shape) + ".")

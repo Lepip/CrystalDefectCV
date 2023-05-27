@@ -1,11 +1,8 @@
 import os
 
 import numpy as np
-from PIL import Image
-from PIL import ImageChops
-from termcolor import colored
+import cv2
 
-from . import utils
 from .processing_modules import modules_dict
 
 
@@ -20,15 +17,17 @@ def find_defects_probs(image: np.ndarray) -> np.ndarray:
     return output_probs
 
 
-def mark_defects(image: np.ndarray, defects_matrix: np.ndarray, min_confidence_threshold: float = 0.5):
+def mark_defects(image: np.ndarray, defects_matrix: np.ndarray, lighten_image_up=True):
     """
     Marks defects on the image based on the probability matrix.
     """
-    from .utils import is_greater
-    marked_matrix = is_greater(defects_matrix, min_confidence_threshold)
-    marked_image = Image.fromarray(image, mode="L").convert("RGB")
-    red_color = Image.new("RGB", image.size, color=(255, 0, 0))
-    marked_image = ImageChops.composite(marked_image, red_color, mask=marked_matrix)
+    marked_image = image.copy()
+    marked_image = cv2.cvtColor(marked_image * (lighten_image_up * 9 + 1), cv2.COLOR_GRAY2RGB)
+    contours, hierarchy = cv2.findContours(defects_matrix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    for c in contours:
+        (x, y, w, h) = cv2.boundingRect(c)
+        w = h = max(w, h)
+        cv2.rectangle(marked_image, (x, y), (x + w, y + h), (255, 0, 0), 2)
     return marked_image
 
 
@@ -39,11 +38,11 @@ def merge_probability_matrices(probability_matrices: {str: np.ndarray}) -> np.nd
     :returns: Matrix of merged probability matrices into one.
     """
     if len(probability_matrices) == 0:
-        print(colored("Error: no module output presented for merge_probability_matrices", color="red"))
+        print("Error: no module output presented for merge_probability_matrices")
         return np.zeros([1, 1])
-    print(probability_matrices)
-    output_matrix = np.zeros(probability_matrices[0].size)
-    for probability_matrix in probability_matrices:
+    shape = list(probability_matrices.values())[0].shape
+    output_matrix = np.zeros(shape).astype('uint8')
+    for probability_matrix in probability_matrices.values():
         output_matrix = np.maximum(output_matrix, probability_matrix)
     return output_matrix
 
