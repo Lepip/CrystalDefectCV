@@ -1,5 +1,5 @@
 import argparse
-import crystall_defect_cv as cdcv
+import crystal_defect_cv as cdcv
 
 
 def set_cfg(technique: str, **kwargs):

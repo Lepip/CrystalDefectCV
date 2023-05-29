@@ -1,7 +1,23 @@
 import json
 import importlib.resources
 
+"""
+Sobel_technique:
+ksize: size of the kernel.
+threshold: threshold of the defect intensity.
+blur_size: size of the bluring kernel of the possible defect pixels.
+power: threshold, but after blur and exponential.
+blur_threshold: how much value has to tip up from the mean to be considered a defect.
 
+Scharr_technique:
+The same, as for sobel_technique with ksize=3.
+
+use_sobel:
+if true, enables sobel_technique to be used.
+
+use_scharr:
+if true, enables scharr_technique to be used.
+"""
 standard_config_json = """
 {
   "sobel_technique": {
